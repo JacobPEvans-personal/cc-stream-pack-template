@@ -1,0 +1,12 @@
+[
+  {
+    "datatype": "cribl-demo",
+    "_time": 1736850010,
+    "type": "item.tool.result",
+    "sessionId": "rollout-019ddfce-b73e-7230-ae24-a70b89c76982",
+    "turnId": "turn_001",
+    "tool": "exec_command",
+    "input": { "command": "grep -n 'def' api.py" },
+    "output": "1: def get_user(id):\n5: def handle_error():"
+  }
+]

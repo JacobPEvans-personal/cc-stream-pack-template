@@ -1,0 +1,17 @@
+# Filesystem destinations so the e2e runner can count events per output.
+# Cribl schema requires maxFileOpenTimeSec/maxFileIdleTimeSec >= 10.
+outputs:
+  fs-out:
+    type: filesystem
+    destPath: /tmp/out/main
+    format: json
+    maxFileOpenTimeSec: 10
+    maxFileIdleTimeSec: 10
+    baseFileName: events
+  fs-default:
+    type: filesystem
+    destPath: /tmp/out/default
+    format: json
+    maxFileOpenTimeSec: 10
+    maxFileIdleTimeSec: 10
+    baseFileName: events

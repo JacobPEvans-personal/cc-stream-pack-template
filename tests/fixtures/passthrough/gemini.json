@@ -1,0 +1,12 @@
+[
+  {
+    "datatype": "cribl-demo",
+    "_time": 1736850000,
+    "type": "user",
+    "id": "msg_1",
+    "sessionId": "sess-abc123",
+    "projectHash": "proj-hash-xyz",
+    "model": "gemini-2.0-flash",
+    "content": [{ "text": "Implement auth middleware" }]
+  }
+]

@@ -1,0 +1,50 @@
+{
+  "nodes": {
+    "nix-devenv": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "dir": "shells/typescript",
+        "lastModified": 1779661353,
+        "narHash": "sha256-w+690PS7JkPUvCCdW45H/bBhPWaTiSUUJVUvBFLhiq8=",
+        "owner": "JacobPEvans",
+        "repo": "nix-devenv",
+        "rev": "c39a025e3924c47f701ad673456912020807f8b4",
+        "type": "github"
+      },
+      "original": {
+        "dir": "shells/typescript",
+        "owner": "JacobPEvans",
+        "repo": "nix-devenv",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1779495359,
+        "narHash": "sha256-KZ/9A3gvlKboDm2Kbv4A6KnfA9wMSfebyoEU91HeBn8=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "2b76bb8a3c79707f0d0903e486da6d9851654c3c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixpkgs-25.11-darwin",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "nix-devenv": "nix-devenv",
+        "nixpkgs": "nixpkgs"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}

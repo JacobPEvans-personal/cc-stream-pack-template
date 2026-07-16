@@ -1,0 +1,41 @@
+{
+  // dryvist canonical Biome config (mirror of dryvist/.github/biome.jsonc).
+  "$schema": "https://biomejs.dev/schemas/2.5.3/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "includes": [
+      "**",
+      "!**/node_modules",
+      "!**/dist",
+      "!**/.direnv",
+      "!**/default",
+      "!**/data/samples",
+      "!**/tests/fixtures"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "useEditorconfig": true
+  },
+  "linter": {
+    "enabled": true
+  },
+  "json": {
+    "formatter": {
+      "trailingCommas": "none",
+      // Keep arrays/objects one-item-per-line. Biome 2.4+ changed the `expand`
+      // default to collapse primitive arrays that fit lineWidth; "always" restores
+      // the readable, greppable, clean-diff style the org config files relied on.
+      // Mirrors dryvist/.github/biome.jsonc.
+      "expand": "always"
+    },
+    "parser": {
+      "allowComments": true,
+      "allowTrailingCommas": true
+    }
+  }
+}

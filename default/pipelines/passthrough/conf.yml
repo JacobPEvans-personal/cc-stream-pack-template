@@ -1,0 +1,22 @@
+output: default
+streamtags: []
+groups: {}
+asyncFuncTimeout: 1000
+description: >-
+  Demo passthrough pipeline. Stamps Stream-canonical fields
+  (host, source, _time, datatype) on every event. Replace this
+  with your real pipeline logic when scaffolding a new pack.
+functions:
+  - id: eval
+    filter: "true"
+    disabled: false
+    conf:
+      add:
+        - name: host
+          value: "host || 'cribl-demo-host'"
+        - name: source
+          value: "source || 'cribl:demo'"
+        - name: _time
+          value: "_time || Date.now()/1000"
+        - name: datatype
+          value: "'cribl-demo'"

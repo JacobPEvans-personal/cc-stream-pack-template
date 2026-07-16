@@ -1,0 +1,27 @@
+name: Test
+
+on:
+  pull_request:
+    paths:
+      - 'default/**'
+      - 'data/samples/**'
+      - 'tests/**'
+      - 'scripts/**'
+      - 'package.json'
+      - '.github/workflows/test.yml'
+      - '.github/workflows/cribl-pack-test.yml'
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    # Runs on the template too — the template now ships a working demo
+    # passthrough pipeline + fixture so the harness gets exercised here
+    # before consumer repos inherit it.
+    uses: dryvist/cc-edge-pack-template/.github/workflows/cribl-pack-test.yml@main
+    with:
+      # CHANGE per pack: 'edge' for Cribl Edge packs, 'stream' for Cribl Stream packs.
+      pack_type: stream

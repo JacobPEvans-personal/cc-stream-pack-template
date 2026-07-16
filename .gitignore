@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+*.swp
+*.bak
+
+# Build artifacts
+*.crbl
+
+# Node / TypeScript
+node_modules/
+**/node_modules/
+dist/
+*.tsbuildinfo
+
+# Nix / direnv
+.direnv/
+.envrc.cache
+
+# Editor / OS
+.idea/
+.vscode/

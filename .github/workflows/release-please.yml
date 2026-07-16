@@ -1,0 +1,20 @@
+name: release-please
+
+# Inherits the org-native release-please pipeline from dryvist/.github, which
+# enforces the org-wide major-bump block, eager-auto-merges the release PR, and
+# uses the dryvist release App token so release PRs trigger downstream workflows.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    if: github.event.repository.is_template == false
+    uses: dryvist/.github/.github/workflows/_release-please.yml@main
+    secrets:
+      GH_ACTION_RELEASE_PLEASE_PRIVATE_KEY: ${{ secrets.GH_ACTION_RELEASE_PLEASE_PRIVATE_KEY }}

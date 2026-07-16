@@ -1,0 +1,17 @@
+id: default
+groups: {}
+routes:
+  - id: main-route
+    name: main-route
+    filter: index=='prod'
+    pipeline: passthrough
+    output: fs-out
+    final: true
+    disabled: false
+  - id: default
+    name: default
+    filter: "true"
+    pipeline: passthrough
+    output: fs-default
+    final: true
+    disabled: false

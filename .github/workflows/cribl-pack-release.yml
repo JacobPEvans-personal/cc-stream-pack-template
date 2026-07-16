@@ -1,0 +1,43 @@
+name: Cribl Pack Release (reusable)
+
+# Reusable workflow consumed by every dryvist Cribl pack via:
+#
+#   uses: dryvist/cc-edge-pack-template/.github/workflows/cribl-pack-release.yml@main
+#
+# Builds the .crbl tarball and uploads to GitHub Releases. Triggered by tag
+# push in the calling workflow.
+
+on:
+  workflow_call:
+    inputs:
+      additional_files:
+        description: 'Extra files to include in the .crbl tarball, space-separated. LICENSE included automatically if present.'
+        type: string
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build .crbl and publish GitHub release
+    runs-on: ubuntu-latest
+    env:
+      ADDITIONAL_FILES: ${{ inputs.additional_files }}
+      REPO_NAME: ${{ github.event.repository.name }}
+      TAG_NAME: ${{ github.ref_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+
+      - name: Build .crbl tarball
+        run: ./scripts/build-crbl.sh
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 # v3
+        with:
+          prerelease: ${{ contains(github.ref, 'RC') || contains(github.ref, 'TC') }}
+          generate_release_notes: true
+          files: |
+            ${{ env.OUT_VERSIONED }}
+            ${{ env.OUT_LATEST }}

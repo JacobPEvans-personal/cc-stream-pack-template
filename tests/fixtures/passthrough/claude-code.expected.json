@@ -1,0 +1,9 @@
+[
+  {
+    "datatype": "cribl-demo",
+    "type": "assistant",
+    "sessionId": "fe82a754-0606-4bcf-b79a-f7b6f2a72bc8",
+    "host": "cribl-demo-host",
+    "source": "cribl:demo"
+  }
+]

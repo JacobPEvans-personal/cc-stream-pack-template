@@ -1,0 +1,10 @@
+[
+  {
+    "datatype": "cribl-demo",
+    "type": "user",
+    "sessionId": "sess-abc123",
+    "projectHash": "proj-hash-xyz",
+    "host": "cribl-demo-host",
+    "source": "cribl:demo"
+  }
+]

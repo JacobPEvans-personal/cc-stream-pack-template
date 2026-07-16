@@ -1,0 +1,10 @@
+[
+  {
+    "datatype": "cribl-demo",
+    "type": "item.tool.result",
+    "sessionId": "rollout-019ddfce-b73e-7230-ae24-a70b89c76982",
+    "tool": "exec_command",
+    "host": "cribl-demo-host",
+    "source": "cribl:demo"
+  }
+]

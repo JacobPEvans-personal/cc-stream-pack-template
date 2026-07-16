@@ -1,0 +1,22 @@
+[
+  {
+    "datatype": "cribl-demo",
+    "_time": 1736836313.996,
+    "type": "assistant",
+    "sessionId": "fe82a754-0606-4bcf-b79a-f7b6f2a72bc8",
+    "message": {
+      "role": "assistant",
+      "model": "claude-opus-4-5-20251101",
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_abc",
+          "name": "Read",
+          "input": { "file_path": "/src/app.ts" }
+        }
+      ],
+      "stop_reason": "tool_use",
+      "usage": { "input_tokens": 1234, "output_tokens": 567 }
+    }
+  }
+]
