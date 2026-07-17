@@ -239,17 +239,29 @@ export async function runScenario(scenarioDir: string): Promise<ScenarioResult> 
 
 // One flow picture per scenario: events in on the left, where they ended up
 // on the right. Renders natively on GitHub — no tooling needed to read it.
+// Brand palette (docs / docs-starlight): teal accent ramp on dark navy.
+const MERMAID_INIT = `%%{init: {"theme": "base", "themeVariables": {
+  "primaryColor": "#0b1d2a", "primaryTextColor": "#f4efe6", "primaryBorderColor": "#4fb3a9",
+  "lineColor": "#4fb3a9", "edgeLabelBackground": "#1f4f4a", "textColor": "#f4efe6",
+  "fontFamily": "ui-sans-serif, sans-serif"
+}}}%%`;
+const BOX_OK = "fill:#2f7e78,stroke:#aee4dd,stroke-width:2px,color:#f4efe6";
+const BOX_FAIL = "fill:#b3261e,stroke:#ffd8d6,stroke-width:2px,color:#ffffff";
+const BOX_NEUTRAL = "fill:#0b1d2a,stroke:#4fb3a9,stroke-dasharray:4,color:#aee4dd";
+
 function mermaidFlow(r: ScenarioResult): string {
   const lines = [
     "```mermaid",
+    MERMAID_INIT,
     "flowchart LR",
-    `  IN(["${r.sent.toLocaleString("en-US")} events sent"]) --> C{"Cribl routing"}`,
+    `  IN(["${r.sent.toLocaleString("en-US")} events sent"]) --> C{"Cribl Routes"}`,
   ];
   for (const [dest, got] of Object.entries(r.counts)) {
     const ok = got === r.expected[dest];
+    const box = ok ? (got === 0 ? BOX_NEUTRAL : BOX_OK) : BOX_FAIL;
     lines.push(
       `  C -->|"${got.toLocaleString("en-US")}"| ${dest}["${ok ? "" : "⚠️ "}${dest}"]`,
-      `  style ${dest} ${ok ? "fill:#d3f9d8,stroke:#2b8a3e" : "fill:#ffe3e3,stroke:#c92a2a"}`,
+      `  style ${dest} ${box}`,
     );
   }
   lines.push("```");
