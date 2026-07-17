@@ -1,11 +1,15 @@
 # End-to-end testing
 
 `e2e/run.ts` proves the pack against a **real routing engine**, not the
-`/preview` API the Vitest harness uses: it starts a `cribl/cribl` container
-with a bind-mounted worker config (`e2e/cribl/` → `$CRIBL_HOME/local/cribl/`),
-pushes 1000 sequence-numbered NDJSON events into a `tcpjson` input on
-port 10070, waits for the filesystem destinations to flush, and compares
-unique-seq counts per destination against `e2e/expect.json`.
+`/preview` API the Vitest harness uses: it starts a `cribl/cribl` container,
+copies in a worker config (`e2e/cribl/` → `$CRIBL_HOME/local/cribl/`),
+**commits the config in Cribl's internal git** (a test isn't valid with
+uncommitted Cribl state), pushes 1000 sequence-numbered NDJSON events into a
+`tcpjson` input on port 10070, waits for the filesystem destinations to
+flush, and compares unique-seq counts per destination against
+`e2e/expect.json`. The result is a plain-language report with a mermaid flow
+diagram (rendered natively by GitHub) and detailed counts collapsed behind a
+click.
 
 ```sh
 node --experimental-strip-types e2e/run.ts     # exits non-zero on mismatch
@@ -19,8 +23,15 @@ table to the run's Step Summary.
 
 - Single-instance Cribl reads worker config from `$CRIBL_HOME/local/cribl/`:
   `inputs.yml`, `outputs.yml`, `pipelines/route.yml`, `pipelines/<id>/conf.yml`.
+- Config is **copied** into the container (`docker cp`), never bind-mounted:
+  Cribl persists config via `rename()`, which fails (EBUSY) over bind-mounted
+  files — UI edits would silently not persist and Cribl's internal git would
+  fight the mounts. (The image has no `/opt/cribl/local` until first boot, so
+  the runner stages the tree and copies it before `docker start`.)
 - Filesystem outputs require `maxFileOpenTimeSec`/`maxFileIdleTimeSec` >= 10
   (schema minimum); the runner polls until counts are stable across polls.
+  Never delete output files mid-run — Cribl holds them open, and writes to
+  deleted inodes vanish silently.
 - Packs must be installed via the management API (`PUT /packs?filename=` then
   `POST /packs`), **never** bind-mounted into `/opt/cribl/default/<id>` — a
   mounted pack fails boot, and the failed boot's rollback deletes the mounted

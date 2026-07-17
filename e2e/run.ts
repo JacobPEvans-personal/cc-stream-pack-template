@@ -1,14 +1,22 @@
-// End-to-end proof: start a real Cribl Stream container with a bind-mounted
-// route table, push NDJSON events through a tcpjson input, and count what
-// lands in each filesystem destination. No preview API — the real routing
-// engine, clones, Final flags and all.
+// End-to-end proof: start a real Cribl Stream container, copy in a worker
+// config, commit it in Cribl's internal git (no uncommitted state — same
+// discipline as a real change), push NDJSON events through a tcpjson input,
+// and count what lands in each filesystem destination. No preview API — the
+// real routing engine, clones, Final flags and all.
 //
 // Usage: node --experimental-strip-types e2e/run.ts [scenarioDir...]
-// A scenario dir contains cribl/ (mounted at $CRIBL_HOME/local/cribl) and
+// A scenario dir contains cribl/ (copied to $CRIBL_HOME/local/cribl) and
 // expect.json ({ dest: expectedCount }). Defaults to e2e/ itself (with
-// e2e/config/cribl and e2e/expect.json).
+// e2e/cribl and e2e/expect.json).
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, readFileSync, readdirSync, statSync } from "node:fs";
+import {
+  cpSync,
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  statSync,
+} from "node:fs";
 import net from "node:net";
 import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
@@ -21,7 +29,12 @@ const EVENT_COUNT = Number(process.env.EVENT_COUNT ?? 1000);
 
 const docker = (...args: string[]): string =>
   execFileSync("docker", args, { encoding: "utf8" });
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+// Config is COPIED in (docker cp) rather than bind-mounted: Cribl persists
+// config via rename(), which fails (EBUSY) over bind-mounted files — UI
+// edits would silently not persist and Cribl's internal git would fight
+// the mounts. With copies, Cribl fully owns its files.
 export function startCribl(configDir: string, outDir: string): void {
   try {
     docker("rm", "-f", CONTAINER);
@@ -29,22 +42,24 @@ export function startCribl(configDir: string, outDir: string): void {
     /* not running */
   }
   docker(
-    "run",
-    "-d",
+    "create",
     "--name",
     CONTAINER,
     "-p",
     `${API_PORT}:9000`,
     "-p",
     `${TCP_PORT}:10070`,
-    ...["inputs.yml", "outputs.yml", "pipelines"].flatMap((f) => [
-      "-v",
-      `${join(configDir, f)}:/opt/cribl/local/cribl/${f}`,
-    ]),
     "-v",
     `${outDir}:/tmp/out`,
     IMAGE,
   );
+  // The image has no /opt/cribl/local until first boot — stage the tree and
+  // copy it in one shot.
+  const stage = mkdtempSync(join(tmpdir(), "cribl-local-"));
+  cpSync(configDir, join(stage, "cribl"), { recursive: true });
+  docker("cp", stage, `${CONTAINER}:/opt/cribl/local`);
+  rmSync(stage, { recursive: true, force: true });
+  docker("start", CONTAINER);
 }
 
 export async function waitHealthy(timeoutSec = 90): Promise<void> {
@@ -63,6 +78,35 @@ export async function waitHealthy(timeoutSec = 90): Promise<void> {
     await sleep(2000);
   }
   throw new Error(`Cribl not healthy after ${timeoutSec}s`);
+}
+
+// Commit the config in Cribl's internal git before any data flows — a test
+// isn't valid with uncommitted Cribl state.
+export async function commitCriblConfig(message: string): Promise<void> {
+  const base = `http://localhost:${API_PORT}/api/v1`;
+  const login = await fetch(`${base}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      username: "admin",
+      password: process.env.CRIBL_PASSWORD ?? "admin",
+    }),
+  });
+  if (!login.ok)
+    throw new Error(
+      "Cribl API login failed — set CRIBL_PASSWORD if this instance's admin password was changed",
+    );
+  const { token } = (await login.json()) as { token: string };
+  const commit = await fetch(`${base}/version/commit`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ message }),
+  });
+  if (!commit.ok)
+    throw new Error(`cribl config commit failed: ${await commit.text()}`);
 }
 
 export type EventShape = Record<string, unknown>;
@@ -153,8 +197,6 @@ export function stopCribl(): void {
   }
 }
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
 export interface ScenarioResult {
   scenario: string;
   sent: number;
@@ -172,6 +214,7 @@ export async function runScenario(scenarioDir: string): Promise<ScenarioResult> 
   startCribl(join(scenarioDir, "cribl"), outDir);
   try {
     await waitHealthy();
+    await commitCriblConfig(`e2e scenario ${basename(scenarioDir)}`);
     const events = makeEvents(EVENT_COUNT);
     await sendEvents(events);
     await waitForFlush(outDir, dests);
@@ -183,10 +226,10 @@ export async function runScenario(scenarioDir: string): Promise<ScenarioResult> 
     return { scenario: basename(scenarioDir), sent: events.length, counts, expected, pass };
   } finally {
     // KEEP=1 leaves the container running for inspection at
-    // http://localhost:19000 (admin/admin); next run recycles it.
+    // http://localhost:19000; next run recycles it.
     if (process.env.KEEP === "1") {
       console.error(
-        `container ${CONTAINER} kept alive — Cribl UI: http://localhost:${API_PORT} (admin/admin)`,
+        `container ${CONTAINER} kept alive — Cribl UI: http://localhost:${API_PORT}`,
       );
     } else {
       stopCribl();
@@ -194,18 +237,51 @@ export async function runScenario(scenarioDir: string): Promise<ScenarioResult> 
   }
 }
 
+// One flow picture per scenario: events in on the left, where they ended up
+// on the right. Renders natively on GitHub — no tooling needed to read it.
+function mermaidFlow(r: ScenarioResult): string {
+  const lines = [
+    "```mermaid",
+    "flowchart LR",
+    `  IN(["${r.sent.toLocaleString("en-US")} events sent"]) --> C{"Cribl routing"}`,
+  ];
+  for (const [dest, got] of Object.entries(r.counts)) {
+    const ok = got === r.expected[dest];
+    lines.push(
+      `  C -->|"${got.toLocaleString("en-US")}"| ${dest}["${ok ? "" : "⚠️ "}${dest}"]`,
+      `  style ${dest} ${ok ? "fill:#d3f9d8,stroke:#2b8a3e" : "fill:#ffe3e3,stroke:#c92a2a"}`,
+    );
+  }
+  lines.push("```");
+  return lines.join("\n");
+}
+
 export function reportMarkdown(results: ScenarioResult[]): string {
-  const rows = results.map((r) => {
-    const cells = Object.keys(r.expected)
-      .map((d) => `${d}: ${r.counts[d]}/${r.expected[d]}`)
-      .join(", ");
-    return `| ${r.scenario} | ${r.sent} | ${cells} | ${r.pass ? "✅ pass" : "❌ FAIL"} |`;
-  });
-  return [
-    "| Scenario | Sent | Received (actual/expected per dest) | Result |",
-    "| --- | --- | --- | --- |",
-    ...rows,
-  ].join("\n");
+  const lines: string[] = ["# End-to-end results", ""];
+  for (const r of results) {
+    lines.push(
+      `## ${r.scenario} — ${r.pass ? "✅ pass" : "❌ FAIL"}`,
+      "",
+      r.pass
+        ? `✅ **All ${r.sent.toLocaleString("en-US")} events accounted for.**`
+        : "❌ **Counts did not match expectations — see below.**",
+      "",
+      mermaidFlow(r),
+      "",
+      "<details><summary>Detailed counts (click to expand)</summary>",
+      "",
+      "| Destination | Actual | Expected |",
+      "| --- | --- | --- |",
+      ...Object.keys(r.expected).map(
+        (d) =>
+          `| ${d} | ${r.counts[d]}${r.counts[d] === r.expected[d] ? "" : " ⚠️"} | ${r.expected[d]} |`,
+      ),
+      "",
+      "</details>",
+      "",
+    );
+  }
+  return lines.join("\n");
 }
 
 const isMain = process.argv[1]?.endsWith("run.ts");
