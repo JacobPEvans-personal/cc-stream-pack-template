@@ -182,7 +182,15 @@ export async function runScenario(scenarioDir: string): Promise<ScenarioResult> 
     const pass = dests.every((d) => counts[d] === expected[d]);
     return { scenario: basename(scenarioDir), sent: events.length, counts, expected, pass };
   } finally {
-    stopCribl();
+    // KEEP=1 leaves the container running for inspection at
+    // http://localhost:19000 (admin/admin); next run recycles it.
+    if (process.env.KEEP === "1") {
+      console.error(
+        `container ${CONTAINER} kept alive — Cribl UI: http://localhost:${API_PORT} (admin/admin)`,
+      );
+    } else {
+      stopCribl();
+    }
   }
 }
 

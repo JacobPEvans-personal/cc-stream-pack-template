@@ -58,6 +58,16 @@ make docker-down        # stop test container
 Add a fixture under `tests/fixtures/<pipeline>/<case>.json` and `make test`
 picks it up automatically — no code changes required.
 
+End-to-end proof against a real routing engine (not `/preview`):
+
+```sh
+node --experimental-strip-types e2e/run.ts          # 1000 events in -> counted out
+KEEP=1 node --experimental-strip-types e2e/run.ts   # keep Cribl up afterward:
+                                                    # http://localhost:19000 (admin/admin)
+```
+
+See [`docs/e2e-testing.md`](docs/e2e-testing.md).
+
 ## Releases
 
 Don't tag versions manually. release-please opens a PR with the computed
@@ -67,9 +77,10 @@ version bump on every push to `main`; merge that PR to publish a release. See
 ## Documentation
 
 | Doc | What it covers |
-|---|---|
+| --- | --- |
 | [`docs/development.md`](docs/development.md) | Local dev setup, Make targets, optional Nix shell |
 | [`docs/test-harness.md`](docs/test-harness.md) | What gets tested, fixture conventions, Cribl version matrix |
+| [`docs/e2e-testing.md`](docs/e2e-testing.md) | Real-container e2e runs, KEEP=1 inspection, CI login options |
 | [`docs/file-boundary.md`](docs/file-boundary.md) | Generic vs pack-specific files (sync rules) |
 | [`docs/release-process.md`](docs/release-process.md) | release-please flow, version bump rules |
 | [`docs/validator-rules.md`](docs/validator-rules.md) | Pack-structure validation rules + how they're enforced |
