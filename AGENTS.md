@@ -1,3 +1,6 @@
+---
+skill-groups: [core, review]
+---
 # AGENTS.md
 
 AI-assistant guardrails for this template repo. Detail lives in [`docs/`](docs/);
