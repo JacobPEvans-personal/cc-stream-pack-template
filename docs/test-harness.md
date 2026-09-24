@@ -5,13 +5,23 @@ convention — no TypeScript edits needed to add tests.
 
 ## What gets tested
 
-| Suite | What it asserts |
-|---|---|
-| `routes.test.ts` (structure) | route.yml exists, every route has a pipeline, every referenced pipeline file exists, routes use `output: __group`, filters aren't statically falsy, no pipeline named `main` |
-| `routes.test.ts` (dynamic flow) | Per route: a synthetic event matching its filter triggers the named pipeline and isn't dropped (uses live Cribl) |
-| `pipelines.test.ts` | Per fixture: pipeline produces non-empty output; partial-match against `<case>.expected.json` if present; required-fields assertion (`sourcetype`+`index` for Edge; `host`+`source`+`_time` for Stream) unless `.skip-required-fields` marker present |
-| `tarball-parity.test.ts` | The whitelist in `tests/cribl-client.ts::PACK_ROOT_ENTRIES` (used by every test-time pack install) matches `INCLUDE=` in `scripts/build-crbl.sh` (used by every release). Catches drift before a release ships a tarball CI never validated. |
-| `harness-teeth.test.ts` | Meta-tests: every assertion helper used by the suites above actually throws on its target failure mode. Pure unit-level; no Cribl required. |
+- **`routes.test.ts` (structure)**: `route.yml` exists. Every route has a
+  pipeline, and every referenced pipeline file exists. Routes use
+  `output: __group`. No filter is statically falsy. No pipeline is named `main`.
+- **`routes.test.ts` (dynamic flow)**: per route, a synthetic event that
+  matches its filter reaches the named pipeline and is not dropped. Uses live
+  Cribl.
+- **`pipelines.test.ts`**: per fixture, the pipeline produces non-empty
+  output. Output partially matches `<case>.expected.json` when present.
+  Required fields are asserted (`sourcetype` + `index` for Edge; `host` +
+  `source` + `_time` for Stream) unless a `.skip-required-fields` marker
+  exists.
+- **`tarball-parity.test.ts`**: the whitelist in
+  `tests/cribl-client.ts::PACK_ROOT_ENTRIES` (used by every test-time pack
+  install) matches `INCLUDE=` in `scripts/build-crbl.sh` (used by every
+  release). Catches drift before a release ships a tarball CI never validated.
+- **`harness-teeth.test.ts`**: meta-tests. Every assertion helper used by the
+  suites above throws on its target failure mode. Unit-level; no Cribl needed.
 
 Adding a new assertion helper? Add a matching case to `harness-teeth.test.ts`
 in the same PR — the `it()` names there are the source of truth for what each
@@ -52,13 +62,13 @@ pass-through packs whose downstream sets these fields).
 `tests/cribl-client.ts` wraps the Cribl management API. Reference:
 
 | Method | Purpose |
-|---|---|
+| --- | --- |
 | `waitUntilReady()` | Block until `/health` returns 200 |
 | `installPack(tarball, expectedId?)` | Upload `.crbl` + poll until pack registers |
 | `deletePack(packId)` | Remove pack |
 | `saveSample(name, events)` / `deleteSample(id)` | Sample lifecycle |
 | `runPipeline(pipeline, sampleId, {pack})` | Execute via `/preview` (mode `pipe`); returns output events |
-| `runRouteFlow(sampleId, events, {pack})` | Local route-matcher fallback (Cribl has no `mode:route`); finds matching route in `route.yml`, then runs its pipeline |
+| `runRouteFlow(sampleId, events, {pack})` | Local route matcher (Cribl has no `mode:route`): finds the match in `route.yml`, runs its pipeline |
 | `assertRequiredFields(events, packType?)` | Assert canonical fields per pack type |
 | `startCapture(filter, ...)` / `readCapture(id, ...)` | Live capture primitives (reserved for future integration tests) |
 | `createPackTarball(packRoot)` (static) | Build `.crbl` from on-disk pack contents |
