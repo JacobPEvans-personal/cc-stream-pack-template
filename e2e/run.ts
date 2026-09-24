@@ -12,8 +12,8 @@ import { execFileSync } from "node:child_process";
 import {
   cpSync,
   mkdtempSync,
-  readFileSync,
   readdirSync,
+  readFileSync,
   rmSync,
   statSync,
 } from "node:fs";
@@ -137,7 +137,10 @@ function sendOnce(events: EventShape[]): Promise<void> {
 
 // The tcpjson input can accept-then-reset connections while the worker is
 // still starting, so retry the whole batch until one send completes cleanly.
-export async function sendEvents(events: EventShape[], retries = 10): Promise<void> {
+export async function sendEvents(
+  events: EventShape[],
+  retries = 10,
+): Promise<void> {
   for (let attempt = 1; ; attempt++) {
     try {
       await sendOnce(events);
@@ -205,7 +208,9 @@ export interface ScenarioResult {
   pass: boolean;
 }
 
-export async function runScenario(scenarioDir: string): Promise<ScenarioResult> {
+export async function runScenario(
+  scenarioDir: string,
+): Promise<ScenarioResult> {
   const expected = JSON.parse(
     readFileSync(join(scenarioDir, "expect.json"), "utf8"),
   ) as Record<string, number>;
@@ -220,10 +225,19 @@ export async function runScenario(scenarioDir: string): Promise<ScenarioResult> 
     await waitForFlush(outDir, dests);
     // Count unique seq values so a retried send can never inflate counts.
     const counts = Object.fromEntries(
-      dests.map((d) => [d, new Set(readDest(outDir, d).map((e) => e.seq)).size]),
+      dests.map((d) => [
+        d,
+        new Set(readDest(outDir, d).map((e) => e.seq)).size,
+      ]),
     );
     const pass = dests.every((d) => counts[d] === expected[d]);
-    return { scenario: basename(scenarioDir), sent: events.length, counts, expected, pass };
+    return {
+      scenario: basename(scenarioDir),
+      sent: events.length,
+      counts,
+      expected,
+      pass,
+    };
   } finally {
     // KEEP=1 leaves the container running for inspection at
     // http://localhost:19000; next run recycles it.
@@ -247,7 +261,8 @@ const MERMAID_INIT = `%%{init: {"theme": "base", "themeVariables": {
 }}}%%`;
 const BOX_OK = "fill:#2f7e78,stroke:#aee4dd,stroke-width:2px,color:#f4efe6";
 const BOX_FAIL = "fill:#b3261e,stroke:#ffd8d6,stroke-width:2px,color:#ffffff";
-const BOX_NEUTRAL = "fill:#0b1d2a,stroke:#4fb3a9,stroke-dasharray:4,color:#aee4dd";
+const BOX_NEUTRAL =
+  "fill:#0b1d2a,stroke:#4fb3a9,stroke-dasharray:4,color:#aee4dd";
 
 function mermaidFlow(r: ScenarioResult): string {
   const lines = [
