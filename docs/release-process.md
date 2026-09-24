@@ -14,7 +14,7 @@ Releases are automated via [release-please](https://github.com/googleapis/releas
 ## Conventional commit → version bump
 
 | Commit prefix | Bump |
-|---|---|
+| --- | --- |
 | `fix:` | patch (`1.2.3` → `1.2.4`) |
 | `feat:` | minor (`1.2.3` → `1.3.0`) |
 | `BREAKING CHANGE:` footer | **blocked** — see below |
