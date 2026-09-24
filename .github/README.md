@@ -40,9 +40,9 @@ Validates pack structure + runs the TypeScript Vitest suite against one
 `cribl/cribl` service container per entry in the `cribl_versions` matrix.
 
 | Input | Required | Default | Purpose |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `pack_type` | yes | — | `edge` or `stream` (drives validator naming convention + required-fields assertion) |
-| `cribl_versions` | no | `latest` + last patches of N-1/N-2 minors | JSON array of `{version, required}` objects — one test leg per entry; `required: false` legs are best-effort |
+| `cribl_versions` | no | `latest` + N-1/N-2 last patches | JSON array of `{version, required}`; one leg each; `required: false` is best-effort |
 | `node_version` | no | `lts/*` | Node.js version |
 | `yq_version` | no | `4.44.5` | Pinned `mikefarah/yq` version |
 
@@ -62,8 +62,8 @@ Builds a `.crbl` tarball via `scripts/build-crbl.sh` and publishes it to
 GitHub Releases (`softprops/action-gh-release`).
 
 | Input | Required | Default | Purpose |
-|---|---|---|---|
-| `additional_files` | no | `''` | Space-separated extra files to include in tarball; `LICENSE` auto-included if present |
+| --- | --- | --- | --- |
+| `additional_files` | no | `''` | Space-separated extra files for the tarball; `LICENSE` is added if present |
 
 Triggered by tag push in the calling workflow (typically by release-please
 when a release PR merges).
@@ -71,7 +71,7 @@ when a release PR merges).
 ## Caller workflows in this repo
 
 | File | Trigger | Calls |
-|---|---|---|
+| --- | --- | --- |
 | `workflows/test.yml` | PR + push to main (paths-filtered) | `cribl-pack-test.yml` (this repo) |
 | `workflows/release.yml` | semver tag push (`vX.Y.Z`, plus `-RCn`/`-TCn` prereleases) | `cribl-pack-release.yml` (this repo) |
 | `workflows/release-please.yml` | push to main | `_release-please.yml` (inherited from `dryvist/.github`) |
