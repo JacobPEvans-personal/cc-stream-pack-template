@@ -14,7 +14,7 @@ scaffold from here via `gh repo create --template`.
 ## Scope
 
 | Layer | Source of truth |
-|---|---|
+| --- | --- |
 | Org-wide policy (TS-everywhere, Biome, Vitest, secrets, releases) | [`dryvist/.github/CLAUDE.md`](https://github.com/dryvist/.github/blob/main/CLAUDE.md) |
 | Generic vs pack-specific file boundary | [`docs/file-boundary.md`](docs/file-boundary.md) |
 | How the test harness works | [`docs/test-harness.md`](docs/test-harness.md) |
