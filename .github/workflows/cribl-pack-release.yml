@@ -2,7 +2,7 @@ name: Cribl Pack Release (reusable)
 
 # Reusable workflow consumed by every dryvist Cribl pack via:
 #
-#   uses: dryvist/cc-edge-pack-template/.github/workflows/cribl-pack-release.yml@main
+#   uses: dryvist/cc-edge-pack-template/.github/workflows/cribl-pack-release.yml@<40-hex commit SHA> # vX.Y.Z
 #
 # Builds the .crbl tarball and uploads to GitHub Releases. Triggered by tag
 # push in the calling workflow.

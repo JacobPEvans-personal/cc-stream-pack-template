@@ -1,7 +1,7 @@
 # `.github/` — workflows for this template
 
 Reusable GitHub Actions workflows callable from any dryvist Cribl pack via
-`uses: dryvist/cc-edge-pack-template/.github/workflows/<file>@main`. Caller
+`uses: dryvist/cc-edge-pack-template/.github/workflows/<file>@<40-hex commit SHA> # vX.Y.Z`. Caller
 workflows in this repo (`test.yml`, `release.yml`, `release-please.yml`) wire
 them up to GitHub events.
 
