@@ -18,6 +18,7 @@
       "original": {
         "dir": "shells/typescript",
         "owner": "JacobPEvans",
+        "ref": "v0.7.0",
         "repo": "nix-devenv",
         "type": "github"
       }
