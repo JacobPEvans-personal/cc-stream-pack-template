@@ -15,7 +15,7 @@ scaffold from here via `gh repo create --template`.
 
 | Layer | Source of truth |
 | --- | --- |
-| Org-wide policy (TS-everywhere, Biome, Vitest, secrets, releases) | [`JacobPEvans/.github/CLAUDE.md`](https://github.com/JacobPEvans/.github/blob/main/CLAUDE.md) |
+| Org-wide policy (TS-everywhere, Biome, Vitest, secrets, releases) | [`.github/CLAUDE.md`](https://github.com/JacobPEvans/.github/blob/main/CLAUDE.md) |
 | Generic vs pack-specific file boundary | [`docs/file-boundary.md`](docs/file-boundary.md) |
 | How the test harness works | [`docs/test-harness.md`](docs/test-harness.md) |
 | Local development setup | [`docs/development.md`](docs/development.md) |
