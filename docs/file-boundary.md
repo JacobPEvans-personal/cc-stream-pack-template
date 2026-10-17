@@ -23,7 +23,8 @@ Edit only here in the template; updates propagate when packs sync.
 If you find yourself wanting to modify any of the above in a pack repo, **stop**.
 Either:
 
-1. The change belongs in this template (open a PR here, then propagate to packs), or
+1. The change belongs in this template (open a PR here, then propagate to
+   packs), or
 2. The change should be expressed as fixture data (`tests/fixtures/<pipeline>/`).
 
 ## Pack-specific — free to modify per-pack

@@ -26,4 +26,5 @@ scaffold from here via `gh repo create --template`.
 
 - Don't modify generic files in pack repos — open a PR here. See `docs/file-boundary.md`.
 - Don't tag versions; release-please proposes them. See `docs/release-process.md`.
-- Don't write inline scripts in workflows — extract to `scripts/*.sh` or use a community action.
+- Don't write inline scripts in workflows; extract them to `scripts/*.sh` or
+  use a community action.
