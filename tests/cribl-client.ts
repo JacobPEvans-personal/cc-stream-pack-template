@@ -64,7 +64,7 @@ const REQUIRED_FIELDS: Record<PackType, readonly string[]> = {
 // emits proper directory headers (Cribl rejects tarballs missing them).
 //
 // Exported so `tarball-parity.test.ts` can assert it stays in sync with the
-// `INCLUDE=(...)` line in `scripts/build-crbl.sh` (the release-path whitelist).
+// `INCLUDE=(...)` line in the shared script from `jpe-cribl/.github`.
 export const PACK_ROOT_ENTRIES = new Set([
   "data",
   "default",

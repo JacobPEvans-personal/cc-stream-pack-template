@@ -4,9 +4,9 @@
  *
  * GENERIC: copied verbatim from the template into every pack repo.
  *
- * Two parallel implementations of the .crbl whitelist live in this repo:
- *   - `tests/cribl-client.ts::PACK_ROOT_ENTRIES`     (used in CI test job)
- *   - `scripts/build-crbl.sh::INCLUDE=(...)`         (used in release workflow)
+ * The .crbl whitelist is maintained in two places:
+ *   - `tests/cribl-client.ts::PACK_ROOT_ENTRIES` (used in the CI test job)
+ *   - the shared `scripts/build-crbl.sh` from `jpe-cribl/.github` (release workflow)
  *
  * If they drift, CI passes against one whitelist and ships a tarball with a
  * different whitelist — exactly the failure mode "fixed in commit 452f029
@@ -30,7 +30,12 @@ import * as path from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { CriblClient, PACK_ROOT, PACK_ROOT_ENTRIES } from "./cribl-client.js";
 
-const BUILD_SCRIPT = path.join(PACK_ROOT, "scripts", "build-crbl.sh");
+const BUILD_SCRIPT = path.join(
+  PACK_ROOT,
+  ".gh-shared",
+  "scripts",
+  "build-crbl.sh",
+);
 const REPO_NAME = "tarball-parity-test";
 const TAG_NAME = "v0.0.0-parity";
 const RELEASE_TARBALL = `/tmp/${REPO_NAME}-${TAG_NAME}.crbl`;
@@ -40,6 +45,12 @@ let tmpDir: string;
 let testTarballPath: string;
 
 beforeAll(async () => {
+  if (!existsSync(BUILD_SCRIPT)) {
+    throw new Error(
+      "Shared scripts are missing. Run: git clone --depth 1 https://github.com/jpe-cribl/.github .gh-shared",
+    );
+  }
+
   tmpDir = mkdtempSync(path.join(tmpdir(), "tarball-parity-"));
 
   // Build the release-path tarball.

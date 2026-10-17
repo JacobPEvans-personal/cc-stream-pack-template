@@ -19,3 +19,4 @@ dist/
 # Editor / OS
 .idea/
 .vscode/
+.gh-shared/
