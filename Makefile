@@ -13,7 +13,7 @@ help: ## Show this help
 install: ## Install Node test dependencies (pnpm)
 	cd tests && pnpm install
 
-build: ## Build .crbl artifact (mirrors what release.yml does in CI)
+build: ## Build .crbl artifact (mirrors what pack-release.yml does in CI)
 	@INCLUDE="data default package.json README.md"; \
 	[[ -f LICENSE ]] && INCLUDE="$$INCLUDE LICENSE"; \
 	tar -czf "$(CRBL_FILE)" $$INCLUDE

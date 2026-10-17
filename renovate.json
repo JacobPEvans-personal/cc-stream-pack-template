@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "local>dryvist/.github"
+    "github>JacobPEvans/.github"
   ],
   "customManagers": [
     {
@@ -19,7 +19,7 @@
   ],
   "packageRules": [
     {
-      "description": "Allow only patch bumps on cribl/cribl pins. The matrix shape is `latest` + last-patch-of-N-1 + last-patch-of-N-2; Renovate keeps each pinned minor on its newest patch. Minor/major shifts (when the N window rolls forward) stay manual — they're a deliberate compat-band decision, not a routine bump.",
+      "description": "Allow only patch bumps on cribl/cribl pins. The matrix shape is `latest` + last-patch-of-N-1 + last-patch-of-N-2; Renovate keeps each pinned minor on its newest patch. Minor/major shifts (when the N window rolls forward) stay manual \u2014 they're a deliberate compat-band decision, not a routine bump.",
       "matchPackageNames": [
         "cribl/cribl"
       ],
@@ -28,16 +28,6 @@
         "major"
       ],
       "enabled": false
-    },
-    {
-      "description": "Cribl is in the criblio/** trusted-org list per JacobPEvans renovate-presets, so patch bumps auto-merge after the inherited stabilization window.",
-      "matchPackageNames": [
-        "cribl/cribl"
-      ],
-      "matchUpdateTypes": [
-        "patch"
-      ],
-      "automerge": true
     }
   ]
 }

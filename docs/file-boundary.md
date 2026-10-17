@@ -17,7 +17,8 @@ Edit only here in the template; updates propagate when packs sync.
 - `.github/workflows/cribl-pack-test.yml` (reusable)
 - `.github/workflows/cribl-pack-release.yml` (reusable)
 - `.github/workflows/test.yml` (caller — only `pack_type:` value changes per pack)
-- `.github/workflows/release.yml`, `.github/workflows/release-please.yml`
+- `.github/workflows/pack-release.yml` (pack release caller)
+- `.github/workflows/release.yml` (shared release caller)
 
 If you find yourself wanting to modify any of the above in a pack repo, **stop**.
 Either:
