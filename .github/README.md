@@ -1,9 +1,9 @@
 # `.github/` — workflows for this template
 
-Reusable GitHub Actions workflows callable from any dryvist Cribl pack via
-`uses: dryvist/cc-edge-pack-template/.github/workflows/<file>@main`. Caller
-workflows in this repo (`test.yml`, `release.yml`, `release-please.yml`) wire
-them up to GitHub events.
+Reusable workflows are called from dryvist Cribl packs with a `uses:` ref:
+`dryvist/cc-edge-pack-template/.github/workflows/<file>@main`.
+Caller workflows in this repo (`test.yml`, `release.yml`,
+`release-please.yml`) wire them up to GitHub events.
 
 ## Installation
 
@@ -39,12 +39,14 @@ test specific upstream Cribl releases).
 Validates pack structure + runs the TypeScript Vitest suite against one
 `cribl/cribl` service container per entry in the `cribl_versions` matrix.
 
-| Input | Required | Default | Purpose |
-| --- | --- | --- | --- |
-| `pack_type` | yes | — | `edge` or `stream` (drives validator naming convention + required-fields assertion) |
-| `cribl_versions` | no | `latest` + N-1/N-2 last patches | JSON array of `{version, required}`; one leg each; `required: false` is best-effort |
-| `node_version` | no | `lts/*` | Node.js version |
-| `yq_version` | no | `4.44.5` | Pinned `mikefarah/yq` version |
+- `pack_type` (required): `edge` or `stream`; selects the validator naming
+  convention and required-field checks.
+- `cribl_versions` (optional): defaults to `latest` and the last patches for
+  N-1 and N-2. Supply JSON `{version, required}` entries, one per matrix leg.
+  Set `required: false` for a best-effort leg.
+- `node_version` (optional): defaults to `lts/*`; sets the Node.js version.
+- `yq_version` (optional): defaults to `4.44.5`; pins the `mikefarah/yq`
+  version.
 
 Jobs:
 
@@ -61,20 +63,20 @@ Jobs:
 Builds a `.crbl` tarball via `scripts/build-crbl.sh` and publishes it to
 GitHub Releases (`softprops/action-gh-release`).
 
-| Input | Required | Default | Purpose |
-| --- | --- | --- | --- |
-| `additional_files` | no | `''` | Space-separated extra files for the tarball; `LICENSE` is added if present |
+- `additional_files` (optional): defaults to `''`; lists space-separated extra
+  files for the tarball. `LICENSE` is added if present.
 
 Triggered by tag push in the calling workflow (typically by release-please
 when a release PR merges).
 
 ## Caller workflows in this repo
 
-| File | Trigger | Calls |
-| --- | --- | --- |
-| `workflows/test.yml` | PR + push to main (paths-filtered) | `cribl-pack-test.yml` (this repo) |
-| `workflows/release.yml` | semver tag push (`vX.Y.Z`, plus `-RCn`/`-TCn` prereleases) | `cribl-pack-release.yml` (this repo) |
-| `workflows/release-please.yml` | push to main | `_release-please.yml` (inherited from `dryvist/.github`) |
+- `workflows/test.yml` — PRs and paths-filtered pushes to `main`; calls
+  `cribl-pack-test.yml` in this repo.
+- `workflows/release.yml` — semver tag pushes, including `vX.Y.Z`,
+  `-RCn`, and `-TCn` prereleases; calls `cribl-pack-release.yml`.
+- `workflows/release-please.yml` — pushes to `main`; calls the inherited
+  `_release-please.yml` workflow from `JacobPEvans/.github`.
 
 ## Updating reusable workflow inputs
 
@@ -85,7 +87,7 @@ absolutely cannot.
 
 ## Pinning external actions
 
-Per [`SECURITY.md`](https://github.com/dryvist/.github/blob/main/SECURITY.md):
+Per [`SECURITY.md`](https://github.com/JacobPEvans/.github/blob/main/SECURITY.md):
 
 - Trusted (`actions/*`, `pnpm/action-setup`, `softprops/action-gh-release`):
   semver tag pins (`@v4`, etc.)

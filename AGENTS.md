@@ -15,7 +15,7 @@ scaffold from here via `gh repo create --template`.
 
 | Layer | Source of truth |
 | --- | --- |
-| Org-wide policy (TS-everywhere, Biome, Vitest, secrets, releases) | [`dryvist/.github/CLAUDE.md`](https://github.com/dryvist/.github/blob/main/CLAUDE.md) |
+| Org-wide policy (TS-everywhere, Biome, Vitest, secrets, releases) | [`.github/CLAUDE.md`](https://github.com/JacobPEvans/.github/blob/main/CLAUDE.md) |
 | Generic vs pack-specific file boundary | [`docs/file-boundary.md`](docs/file-boundary.md) |
 | How the test harness works | [`docs/test-harness.md`](docs/test-harness.md) |
 | Local development setup | [`docs/development.md`](docs/development.md) |
@@ -26,4 +26,5 @@ scaffold from here via `gh repo create --template`.
 
 - Don't modify generic files in pack repos — open a PR here. See `docs/file-boundary.md`.
 - Don't tag versions; release-please proposes them. See `docs/release-process.md`.
-- Don't write inline scripts in workflows — extract to `scripts/*.sh` or use a community action.
+- Don't write inline scripts in workflows; extract them to `scripts/*.sh` or
+  use a community action.
