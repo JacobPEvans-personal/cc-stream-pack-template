@@ -9,7 +9,6 @@ on:
       - 'scripts/**'
       - 'package.json'
       - '.github/workflows/test.yml'
-      - '.github/workflows/cribl-pack-test.yml'
   push:
     branches: [main]
 
