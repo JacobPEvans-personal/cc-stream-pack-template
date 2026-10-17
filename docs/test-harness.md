@@ -18,8 +18,10 @@ convention — no TypeScript edits needed to add tests.
   exists.
 - **`tarball-parity.test.ts`**: the whitelist in
   `tests/cribl-client.ts::PACK_ROOT_ENTRIES` (used by every test-time pack
-  install) matches `INCLUDE=` in `scripts/build-crbl.sh` (used by every
-  release). Catches drift before a release ships a tarball CI never validated.
+  install) matches `INCLUDE=` in the shared `scripts/build-crbl.sh` from
+  `jpe-cribl/.github/scripts/` (checked out under `.gh-shared/` in CI and used
+  by the shared release workflow). Catches drift before a release ships a
+  tarball CI never validated.
 - **`harness-teeth.test.ts`**: meta-tests. Every assertion helper used by the
   suites above throws on its target failure mode. Unit-level; no Cribl needed.
 
@@ -43,9 +45,9 @@ tests stop running. No code changes.
 
 Default: `latest` plus the last patches of the previous two minors (N / N-1 /
 N-2). `latest` is required; older legs are best-effort. Shape lives in the
-`cribl_versions` input default in `.github/workflows/cribl-pack-test.yml` —
-edit the JSON there to bump, add, or remove versions. Each leg posts its own
-status check (`Test pack pipelines (Cribl <version>)`) so branch protection
+`cribl_versions` input default in the shared `cribl-pack-test.yml` workflow
+in `jpe-cribl/.github`; edit the JSON there to bump, add, or remove versions.
+Each leg posts its own status check (`Test pack pipelines (Cribl <version>)`) so branch protection
 can require `latest` specifically. When `latest` rolls over to a new minor,
 bump both older entries forward one.
 

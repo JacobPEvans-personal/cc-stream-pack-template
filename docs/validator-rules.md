@@ -1,7 +1,8 @@
 # Validator rules (vct-cribl-pack-validator)
 
 Non-negotiable rules per the [validator skill](https://github.com/VisiCore/vct-cribl-pack-validator).
-The CI `validate` job and `scripts/validate-pack-structure.sh` enforce the
+The CI `validate` job runs the shared `scripts/validate-pack-structure.sh` from
+`jpe-cribl/.github/scripts/` (checked out to `.gh-shared/` in CI) to enforce the
 machine-checkable subset; the rest are conventions to follow.
 
 | Rule | What it means | Enforced by |

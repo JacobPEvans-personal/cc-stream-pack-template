@@ -44,4 +44,6 @@ Each release publishes:
 - `<pack-name>-<version>.crbl` — versioned tarball
 - `<pack-name>.crbl` — "latest" alias (overwritten each release)
 
-Built by `scripts/build-crbl.sh`, which the reusable release workflow invokes.
+The shared release workflow builds these with `scripts/build-crbl.sh` from
+`jpe-cribl/.github/scripts/`. Shared CI scripts are checked out to
+`.gh-shared/` in CI.
